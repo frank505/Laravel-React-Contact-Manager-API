@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Contacts;
 use Validator;
 use Illuminate\Routing\UrlGenerator;
+use File;
+
 
 
 class ContactController extends Controller
@@ -140,6 +142,7 @@ class ContactController extends Controller
    {
       $validator = Validator::make($request->all(),
       [
+          
           "firstname"=>"required|string",
           "phonenumber"=>"required|string"
       ]);
@@ -152,6 +155,7 @@ class ContactController extends Controller
               "message"=>$validator->messages()->toArray()
           ],500);
       }
+
    
       $findData = $this->contacts::find($id);
       if(!$findData)
@@ -159,11 +163,20 @@ class ContactController extends Controller
         return response()->json([
             "success"=>false,
             "message"=>"please this content has no valid id"
-        ],500);
+        ],401);
       }
+
+      
        $getFile = $findData->image_file;
-      $getFile=="default-avatar.png"? :unlink("./profile_images/".$getFile);
-      $profile_picture = $request->profile_image;
+      
+
+      $getFile=="default-avatar.png"? :File::delete('profile_images/'.$getFile);
+   
+
+       $profile_picture = $request->profile_image;
+       
+       
+
       $file_name = "";
       if($profile_picture==null)
       {
@@ -193,7 +206,8 @@ class ContactController extends Controller
           ],500);
        }
        
-    }
+     }
+
        
        $findData->firstname = $request->firstname;
        $findData->phonenumber = $request->phonenumber;
@@ -234,7 +248,7 @@ class ContactController extends Controller
        $getFile = $findData->image_file;
        if($findData->delete())
        {
-           $getFile == "default-avatar.png"? :unlink("./profile_images/".$getFile);
+           $getFile == "default-avatar.png"? :File::delete("profile_images/".$getFile);
            
        return response()->json([
         "success"=>true,
