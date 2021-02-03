@@ -14,7 +14,7 @@ class AuthController extends Controller
 {
     //
     protected $user;
-    
+
 
  public function __construct()
  {
@@ -25,6 +25,7 @@ class AuthController extends Controller
 
  public function register(Request $request)
  {
+
     $validator = Validator::make($request->all(),
     [
       'firstname'=>'required|string',
@@ -38,32 +39,38 @@ class AuthController extends Controller
      return response()->json([
          "success"=>false,
          "message"=>$validator->messages()->toArray(),
+         "error"=>$validator->messages()->toArray()
      ],400);
     }
-    
+
     $check_email = $this->user->where("email",$request->email)->count();
     if($check_email > 0)
     {
         return response()->json([
         'success'=>false,
+        'error'=>'this email already exist please try another email',
         'message'=>'this email already exist please try another email'
         ],200);
 
     }
 
 
-   $registerComplete = $this->user::create([
+   $registerComplete = $this->user->create([
         'firstname'=>$request->firstname,
         'lastname'=>$request->lastname,
         'email'=>$request->email,
-        'password'=> Hash::make($request->password), 
+        'password'=> Hash::make($request->password),
     ]);
-    
 
-  if($registerComplete)
-  {
-     return $this->login($request);
-  }   
+    return response()->json([
+      'success'=>true,
+      'message'=>'registration completed successfully'
+      ],200);
+    //
+    //   if($registerComplete)
+    //   {
+    //      return $this->login($request);
+    //   }
  }
 
 
@@ -82,6 +89,7 @@ class AuthController extends Controller
     {
      return response()->json([
          "success"=>false,
+         "error"=>$validator->messages()->toArray(),
          "message"=>$validator->messages()->toArray(),
      ],400);
     }
@@ -94,7 +102,8 @@ class AuthController extends Controller
     {
         return response()->json([
             'success'=>false,
-            'message'=>'invalid email or password'
+            'message'=>'invalid email or password',
+            'error'=>'invalid email or password'
         ]);
 
       }
@@ -104,6 +113,6 @@ return response()->json([
 'token'=>$jwt_token,
  ]);
 }
- 
+
 
 }

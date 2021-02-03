@@ -24,6 +24,7 @@ function(){
     Route::post("contact/update/{id}","ContactController@editSingleData");
     Route::post("contact/delete/{id}","ContactController@deleteContacts");
     Route::get("contact/get-single/{id}","ContactController@getSingleData");
-    Route::get("contact/search/{search}/{token}/{pagination?}","ContactController@searchData");
+    Route::get("contact/search/{search}/{pagination?}","ContactController@searchData");
 }
 );
+  
